@@ -1,3 +1,5 @@
+-- Table DDL for Neon PostgreSQL
+
 CREATE SCHEMA IF NOT EXISTS football;
 
 CREATE TABLE IF NOT EXISTS football.fixtures (

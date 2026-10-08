@@ -1,6 +1,6 @@
 # Databricks notebook source
 
-# RUN ---------- Packages, variables and creating silver schema
+# Packages, variables and creating silver schema
 from pyspark.sql import functions as F
 from delta.tables import DeltaTable
 
@@ -9,7 +9,9 @@ target_table = "football_api.silver.fixtures"
 
 spark.sql("CREATE SCHEMA IF NOT EXISTS football_api.silver")
 
-# RUN ---------- Create silver dataframe from bronze table
+# COMMAND ----------
+
+# Build the Silver DataFrame from the Bronze table
 bronze_df = spark.table(source_table)
 
 silver_df = (
@@ -48,7 +50,9 @@ silver_df = (
     )
 )
 
-# RUN ---------- Create silver table
+# COMMAND ----------
+
+# Create or merge into the Silver table
 if not spark.catalog.tableExists(target_table):
     (
         silver_df.write

@@ -1,7 +1,7 @@
-# RUN ---------- 
+# Databricks notebook source
 spark.sql("CREATE SCHEMA IF NOT EXISTS football_api.gold")
 
-# RUN ---------- 
+# COMMAND ----------
 spark.sql("""
 CREATE OR REPLACE TABLE football_api.gold.daily_league_summary
 USING DELTA
@@ -72,7 +72,7 @@ SELECT
         league_season
 """)
 
-# RUN ---------- 
+# COMMAND ----------
 display(
     spark.table("football_api.gold.daily_league_summary")
     .orderBy("match_date", "league_name")

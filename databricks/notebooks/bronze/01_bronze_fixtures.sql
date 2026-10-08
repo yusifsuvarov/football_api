@@ -1,8 +1,10 @@
+-- Databricks notebook source
 CREATE CATALOG IF NOT EXISTS football_api;
 
 CREATE SCHEMA IF NOT EXISTS football_api.bronze;
 
--- Move datas from Neon Postgres into bronze layer
+-- COMMAND ----------
+-- Load data from Neon PostgreSQL into the Bronze layer
 CREATE TABLE IF NOT EXISTS football_api.bronze.fixtures
 USING DELTA
 AS
@@ -12,7 +14,7 @@ SELECT
     'neon_postgres' AS source_system
 FROM neon_football_postgres_catalog.football.fixtures as source;
 
-
+-- COMMAND ----------
 -- Merge datas from Neon Postgres into bronze layer
 MERGE INTO football_api.bronze.fixtures AS target
 USING (
