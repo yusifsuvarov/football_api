@@ -29,7 +29,7 @@ def fetch_and_save_raw(fixture_dates: list[date]) -> list[dict]:
             }
         )
 
-        return saved_payloads
+    return saved_payloads
 
 
 def load_raw_files_to_postgres(saved_payloads: list[dict]) -> dict:
@@ -48,7 +48,7 @@ def load_raw_files_to_postgres(saved_payloads: list[dict]) -> dict:
 
         count = upsert_fixtures(database_url=database_url, payload=payload, fetched_at=fetched_at)
 
-        counts["fixture_date"] = count
+        counts[fixture_date] = count
         print(f"{fixture_date}: {count} fixtures worked")
 
     return counts
