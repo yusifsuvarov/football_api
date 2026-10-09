@@ -74,7 +74,7 @@ SELECT
 FROM neon_football_postgres_catalog.football.fixtures AS source
 INNER JOIN football_api.bronze.fixtures AS bronze
     ON source.fixture_id = bronze.fixture_id
-WHERE source.updated_at <> bronze.updated_at
+WHERE NOT (source.updated_at <=> bronze.updated_at)
 
 UNION ALL
 

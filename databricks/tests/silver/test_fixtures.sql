@@ -111,6 +111,36 @@ WHERE away_team_name <> TRIM(away_team_name)
 
 UNION ALL
 
+SELECT 'null_league_id' AS check_name, COUNT(*) AS failures
+FROM football_api.silver.fixtures
+WHERE league_id IS NULL
+
+UNION ALL
+
+SELECT 'null_league_name' AS check_name, COUNT(*) AS failures
+FROM football_api.silver.fixtures
+WHERE league_name IS NULL
+
+UNION ALL
+
+SELECT 'null_home_team_name' AS check_name, COUNT(*) AS failures
+FROM football_api.silver.fixtures
+WHERE home_team_name IS NULL
+
+UNION ALL
+
+SELECT 'null_away_team_name' AS check_name, COUNT(*) AS failures
+FROM football_api.silver.fixtures
+WHERE away_team_name IS NULL
+
+UNION ALL
+
+SELECT 'null_status_short' AS check_name, COUNT(*) AS failures
+FROM football_api.silver.fixtures
+WHERE status_short IS NULL
+
+UNION ALL
+
 SELECT
     'row_count_mismatch' AS check_name,
     CASE
