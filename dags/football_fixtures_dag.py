@@ -2,6 +2,7 @@ from datetime import timedelta
 import pendulum
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.providers.databricks.operators.databricks import DatabricksRunNowOperator
 
 
 from football_pipeline.jobs.fixtures_ingestion import fetch_and_save_raw, load_raw_files_to_postgres
@@ -54,50 +55,11 @@ with DAG(
         python_callable=run_load_task
     )
 
-    fetch_task >> load_task
+    run_databricks_lakehouse = DatabricksRunNowOperator(
+        task_id="run_databricks_lakehouse",
+        databricks_conn_id="databricks_default",
+        job_id=200744257117695,
+        polling_period_seconds=30,
+    )
 
-
-
-
-
-
-# from datetime import timedelta
-
-# import pendulum
-# from airflow import DAG
-# from airflow.operators.python import PythonOperator
-
-# from football_pipeline.ingestion import ingest_fixture_dates
-
-
-# def run_daily_ingestion(**context):
-#     # Günlük çalışmanın bitiş tarihini Bakü saat diliminde al.
-#     run_date = context["data_interval_end"].in_timezone("Asia/Baku").date()
-
-#     # Dünkü maçların sonuçlarını güncelle; bugünü ve yarını da al.
-#     dates_to_fetch = [
-#         run_date - timedelta(days=1),
-#         run_date,
-#         run_date + timedelta(days=1),
-#     ]
-
-#     return ingest_fixture_dates(dates_to_fetch)
-
-
-# with DAG(
-#     dag_id="football_fixtures_to_neon",
-#     description="Adding and Updating API-Football data to Neon PostgreSQL",
-#     schedule="0 3 * * *",
-#     start_date=pendulum.datetime(2026, 10, 3, tz="Asia/Baku"),
-#     catchup=False,
-#     max_active_runs=1,
-#     default_args={
-#         "retries": 2,
-#         "retry_delay": timedelta(minutes=5),
-#     },
-#     tags=["football", "api", "neon"],
-# ) as dag:
-#     ingest_fixtures = PythonOperator(
-#         task_id="fetch_and_upsert_fixtures",
-#         python_callable=run_daily_ingestion,
-#     )
+    fetch_task >> load_task >> run_databricks_lakehouse
