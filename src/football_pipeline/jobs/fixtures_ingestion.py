@@ -1,5 +1,5 @@
 import os
-from datetime import date, datetime, UTC
+from datetime import UTC, date, datetime
 
 from football_pipeline.clients.football_api import fetch_fixtures
 from football_pipeline.repositories.postgres_fixtures import upsert_fixtures

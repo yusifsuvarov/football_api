@@ -1,4 +1,4 @@
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 from football_pipeline.transforms.fixtures import to_row
 
