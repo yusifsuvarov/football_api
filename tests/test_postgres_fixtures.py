@@ -1,11 +1,11 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import MagicMock
 
 from football_pipeline.repositories import postgres_fixtures
 
 
 def test_upsert_fixtures_sends_rows_to_postgres(monkeypatch):
-    fetched_at = datetime(2026, 10, 12, 12, 0, tzinfo=timezone.utc)
+    fetched_at = datetime(2026, 10, 12, 12, 0, tzinfo=UTC)
     payload = {"response": [{"fixture": {"id": 1}}, {"fixture": {"id": 2}}]}
     expected_rows = [("row-1",), ("row-2",)]
 
@@ -45,7 +45,7 @@ def test_upsert_fixtures_skips_database_for_empty_response(monkeypatch):
     result = postgres_fixtures.upsert_fixtures(
         database_url="postgresql://test",
         payload={"response": []},
-        fetched_at=datetime(2026, 10, 12, tzinfo=timezone.utc),
+        fetched_at=datetime(2026, 10, 12, tzinfo=UTC),
     )
 
     assert result == 0
