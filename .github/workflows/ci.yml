@@ -23,7 +23,7 @@ jobs:
         run: python -m compileall -q dags src
 
       - name: Install test dependencies
-        run: python -m pip install pytest requests "psycopg[binary]" ruff
+        run: python -m pip install pytest requests "psycopg[binary]" ruff==0.17.0
 
       - name: Run Ruff lint
         run: ruff check dags src tests

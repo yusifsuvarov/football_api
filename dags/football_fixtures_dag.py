@@ -1,9 +1,9 @@
 from datetime import timedelta
+
 import pendulum
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.databricks.operators.databricks import DatabricksRunNowOperator
-
 
 from football_pipeline.jobs.fixtures_ingestion import (
     fetch_and_save_raw,

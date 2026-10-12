@@ -1,6 +1,6 @@
 from datetime import date
-import requests
 
+import requests
 
 API_URL = "https://v3.football.api-sports.io/fixtures"
 

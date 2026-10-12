@@ -1,7 +1,8 @@
 from datetime import datetime
-import psycopg
-from football_pipeline.transforms.fixtures import to_row
 
+import psycopg
+
+from football_pipeline.transforms.fixtures import to_row
 
 COLUMNS = [
     "fixture_id",
@@ -71,8 +72,7 @@ def upsert_fixtures(database_url: str, payload: dict, fetched_at: datetime) -> i
     if not rows:
         return 0
 
-    with psycopg.connect(database_url) as conn:
-        with conn.cursor() as cur:
-            cur.executemany(UPSERT_SQL, rows)
+    with psycopg.connect(database_url) as conn, conn.cursor() as cur:
+        cur.executemany(UPSERT_SQL, rows)
 
     return len(rows)

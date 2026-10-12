@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from psycopg.types.json import Jsonb
 
 
