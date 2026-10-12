@@ -5,17 +5,16 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.databricks.operators.databricks import DatabricksRunNowOperator
 
 
-from football_pipeline.jobs.fixtures_ingestion import fetch_and_save_raw, load_raw_files_to_postgres
+from football_pipeline.jobs.fixtures_ingestion import (
+    fetch_and_save_raw,
+    load_raw_files_to_postgres,
+)
 
 
 def determine_fixture_dates(**context):
-    run_date = (context["data_interval_end"].in_timezone("Asia/Baku").date())
+    run_date = context["data_interval_end"].in_timezone("Asia/Baku").date()
 
-    return [
-        run_date - timedelta(days=1), 
-        run_date,
-        run_date + timedelta(days=1)
-    ]
+    return [run_date - timedelta(days=1), run_date, run_date + timedelta(days=1)]
 
 
 def run_fetch_task(**context):
@@ -38,21 +37,15 @@ with DAG(
     start_date=pendulum.datetime(2026, 10, 3, tz="Asia/Baku"),
     catchup=False,
     max_active_runs=1,
-    default_args={
-        "retries": 2,
-        "retry_delay": timedelta(minutes=5)
-    },
-    tags=["football", "api", "neon"]
+    default_args={"retries": 2, "retry_delay": timedelta(minutes=5)},
+    tags=["football", "api", "neon"],
 ) as dag:
-
     fetch_task = PythonOperator(
-        task_id="fetch_and_save_raw",
-        python_callable=run_fetch_task
+        task_id="fetch_and_save_raw", python_callable=run_fetch_task
     )
 
     load_task = PythonOperator(
-        task_id="load_raw_to_postgres",
-        python_callable=run_load_task
+        task_id="load_raw_to_postgres", python_callable=run_load_task
     )
 
     run_databricks_lakehouse = DatabricksRunNowOperator(

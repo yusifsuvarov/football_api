@@ -33,12 +33,8 @@ def test_fetch_and_save_raw_saves_each_date(monkeypatch):
         saved_dates.append(fixture_date)
         return f"raw/{fixture_date}.json"
 
-    monkeypatch.setattr(
-        fixtures_ingestion, "fetch_fixtures", fake_fetch_fixtures
-    )
-    monkeypatch.setattr(
-        fixtures_ingestion, "save_raw_payload", fake_save_raw_payload
-    )
+    monkeypatch.setattr(fixtures_ingestion, "fetch_fixtures", fake_fetch_fixtures)
+    monkeypatch.setattr(fixtures_ingestion, "save_raw_payload", fake_save_raw_payload)
 
     result = fixtures_ingestion.fetch_and_save_raw(requested_dates)
 
@@ -53,8 +49,7 @@ def test_fetch_and_save_raw_saves_each_date(monkeypatch):
         "raw/2026-10-09.json",
     ]
     assert all(
-        datetime.fromisoformat(item["fetched_at"]).tzinfo is not None
-        for item in result
+        datetime.fromisoformat(item["fetched_at"]).tzinfo is not None for item in result
     )
 
 
@@ -89,12 +84,8 @@ def test_load_raw_files_to_postgres_reads_and_upserts_payload(
         upsert_calls.append((database_url, payload, fetched_at))
         return 1
 
-    monkeypatch.setattr(
-        fixtures_ingestion, "read_raw_payload", fake_read_raw_payload
-    )
-    monkeypatch.setattr(
-        fixtures_ingestion, "upsert_fixtures", fake_upsert_fixtures
-    )
+    monkeypatch.setattr(fixtures_ingestion, "read_raw_payload", fake_read_raw_payload)
+    monkeypatch.setattr(fixtures_ingestion, "upsert_fixtures", fake_upsert_fixtures)
 
     result = fixtures_ingestion.load_raw_files_to_postgres(saved_payloads)
 

@@ -19,13 +19,15 @@ def fetch_and_save_raw(fixture_dates: list[date]) -> list[dict]:
 
         payload = fetch_fixtures(api_key=api_key, fixture_date=fixture_date)
 
-        path = save_raw_payload(payload=payload, fixture_date=fixture_date, fetched_at=fetched_at)
+        path = save_raw_payload(
+            payload=payload, fixture_date=fixture_date, fetched_at=fetched_at
+        )
 
         saved_payloads.append(
             {
                 "fixture_date": fixture_date.isoformat(),
                 "fetched_at": fetched_at.isoformat(),
-                "path": path
+                "path": path,
             }
         )
 
@@ -46,7 +48,9 @@ def load_raw_files_to_postgres(saved_payloads: list[dict]) -> dict:
 
         payload = read_raw_payload(saved_payload["path"])
 
-        count = upsert_fixtures(database_url=database_url, payload=payload, fetched_at=fetched_at)
+        count = upsert_fixtures(
+            database_url=database_url, payload=payload, fetched_at=fetched_at
+        )
 
         counts[fixture_date] = count
         print(f"{fixture_date}: {count} fixtures worked")

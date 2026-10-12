@@ -28,7 +28,6 @@ def save_raw_payload(payload: dict, fixture_date: date, fetched_at: datetime) ->
 
     return str(path)
 
+
 def read_raw_payload(path: str) -> dict:
-    return json.loads(
-        Path(path).read_text(encoding="utf-8")
-    )
+    return json.loads(Path(path).read_text(encoding="utf-8"))

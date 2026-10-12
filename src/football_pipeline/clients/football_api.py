@@ -16,8 +16,6 @@ def fetch_fixtures(api_key: str, fixture_date: date) -> dict:
 
     payload = response.json()
     if payload.get("errors"):
-        raise RuntimeError(
-            f"API-Football error ({fixture_date}): {payload['errors']}"
-        )
+        raise RuntimeError(f"API-Football error ({fixture_date}): {payload['errors']}")
 
     return payload

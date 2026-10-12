@@ -1,12 +1,13 @@
 from datetime import datetime
 from psycopg.types.json import Jsonb
 
+
 def to_row(item: dict, fetched_at: datetime) -> tuple:
     fixture = item.get("fixture") or {}
     periods = fixture.get("periods") or {}
     venue = fixture.get("venue") or {}
     status = fixture.get("status") or {}
-    
+
     league = item.get("league") or {}
 
     teams = item.get("teams") or {}
