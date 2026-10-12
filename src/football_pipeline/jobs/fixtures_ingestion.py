@@ -1,5 +1,5 @@
 import os
-from datetime import date, datetime, timezone
+from datetime import date, datetime, UTC
 
 from football_pipeline.clients.football_api import fetch_fixtures
 from football_pipeline.repositories.postgres_fixtures import upsert_fixtures
@@ -15,7 +15,7 @@ def fetch_and_save_raw(fixture_dates: list[date]) -> list[dict]:
     saved_payloads = []
 
     for fixture_date in fixture_dates:
-        fetched_at = datetime.now(timezone.utc)
+        fetched_at = datetime.now(UTC)
 
         payload = fetch_fixtures(api_key=api_key, fixture_date=fixture_date)
 

@@ -1,10 +1,10 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 from football_pipeline.transforms.fixtures import to_row
 
 
 def test_to_row_maps_fixture_fields_and_keeps_raw_payload():
-    fetched_at = datetime(2026, 10, 12, 12, 0, tzinfo=timezone.utc)
+    fetched_at = datetime(2026, 10, 12, 12, 0, tzinfo=UTC)
 
     item = {
         "fixture": {
@@ -70,7 +70,7 @@ def test_to_row_maps_fixture_fields_and_keeps_raw_payload():
 
 
 def test_to_row_handles_missing_nested_fields():
-    fetched_at = datetime(2026, 10, 12, 12, 0, tzinfo=timezone.utc)
+    fetched_at = datetime(2026, 10, 12, 12, 0, tzinfo=UTC)
 
     row = to_row({}, fetched_at)
 

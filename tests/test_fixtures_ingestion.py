@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import date, datetime, UTC
 
 import pytest
 
@@ -29,7 +29,7 @@ def test_fetch_and_save_raw_saves_each_date(monkeypatch):
 
     def fake_save_raw_payload(*, payload, fixture_date, fetched_at):
         assert payload == {"response": []}
-        assert fetched_at.tzinfo == timezone.utc
+        assert fetched_at.tzinfo == UTC
         saved_dates.append(fixture_date)
         return f"raw/{fixture_date}.json"
 
@@ -95,6 +95,6 @@ def test_load_raw_files_to_postgres_reads_and_upserts_payload(
         (
             "postgresql://test",
             raw_payload,
-            datetime(2026, 10, 9, 12, 0, tzinfo=timezone.utc),
+            datetime(2026, 10, 9, 12, 0, tzinfo=UTC),
         )
     ]
