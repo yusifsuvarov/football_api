@@ -2,8 +2,38 @@ import json
 from datetime import date, datetime
 from pathlib import Path
 
+import os
+from azure.storage.blob import BlobServiceClient, ContentSettings
+
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
+def _upload_raw_payload_to_azure(payload: dict, local_path: Path) -> None:
+    if os.getenv("AZURE_STORAGE_ENABLED", "false").lower() != "true":
+        return
+
+    account_url = os.environ["AZURE_STORAGE_ACCOUNT_URL"]
+    container_name = os.environ["AZURE_STORAGE_CONTAINER"]
+    sas_token = os.environ["AZURE_STORAGE_SAS_TOKEN"].lstrip("?")
+
+    raw_folder = PROJECT_ROOT / "data" / "raw"
+    blob_name  = local_path.relative_to(raw_folder).as_posix()
+
+    blob_service = BlobServiceClient(
+        account_url=account_url,
+        credential=sas_token,
+    )
+    blob_client = blob_service.get_blob_client(
+        container=container_name,
+        blob=blob_name,
+    )
+    try:
+        blob_client.upload_blob(
+            json.dumps(payload, ensure_ascii=False, indent=4).encode("utf-8"),
+            overwrite=False,
+            content_settings=ContentSettings(content_type="application/json"),
+        )
+    finally:
+        blob_service.close()
 
 def save_raw_payload(payload: dict, fixture_date: date, fetched_at: datetime) -> None:
     folder = (
@@ -24,6 +54,8 @@ def save_raw_payload(payload: dict, fixture_date: date, fetched_at: datetime) ->
         json.dumps(payload, ensure_ascii=False, indent=4),
         encoding="utf-8",
     )
+
+    _upload_raw_payload_to_azure(payload, path)
 
     return str(path)
 
