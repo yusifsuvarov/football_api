@@ -7,6 +7,7 @@ from azure.storage.blob import BlobServiceClient, ContentSettings
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
+
 def _upload_raw_payload_to_azure(payload: dict, local_path: Path) -> None:
     if os.getenv("AZURE_STORAGE_ENABLED", "false").lower() != "true":
         return
@@ -16,7 +17,7 @@ def _upload_raw_payload_to_azure(payload: dict, local_path: Path) -> None:
     sas_token = os.environ["AZURE_STORAGE_SAS_TOKEN"].lstrip("?")
 
     raw_folder = PROJECT_ROOT / "data" / "raw"
-    blob_name  = local_path.relative_to(raw_folder).as_posix()
+    blob_name = local_path.relative_to(raw_folder).as_posix()
 
     blob_service = BlobServiceClient(
         account_url=account_url,
@@ -34,6 +35,7 @@ def _upload_raw_payload_to_azure(payload: dict, local_path: Path) -> None:
         )
     finally:
         blob_service.close()
+
 
 def save_raw_payload(payload: dict, fixture_date: date, fetched_at: datetime) -> None:
     folder = (
