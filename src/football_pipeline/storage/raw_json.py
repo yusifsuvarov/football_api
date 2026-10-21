@@ -1,8 +1,8 @@
 import json
+import os
 from datetime import date, datetime
 from pathlib import Path
 
-import os
 from azure.storage.blob import BlobServiceClient, ContentSettings
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
