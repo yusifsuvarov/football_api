@@ -3,3 +3,4 @@ psycopg[binary]
 python-dotenv
 apache-airflow-providers-databricks==7.21.0
 azure-storage-blob
+azure-identity
