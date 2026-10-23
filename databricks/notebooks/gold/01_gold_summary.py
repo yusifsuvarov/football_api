@@ -74,6 +74,7 @@ SELECT
 
 # COMMAND ----------
 display(
-    spark.table("football_api.gold.daily_league_summary")
-    .orderBy("match_date", "league_name")
+    spark.table("football_api.gold.daily_league_summary").orderBy(
+        "match_date", "league_name"
+    )
 )
