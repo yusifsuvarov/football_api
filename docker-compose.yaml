@@ -67,6 +67,11 @@ x-airflow-common:
     AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW__API_AUTH__JWT_SECRET:-airflow_jwt_secret}
     AIRFLOW__API_AUTH__JWT_ISSUER: ${AIRFLOW__API_AUTH__JWT_ISSUER:-airflow}
     PYTHONPATH: /opt/airflow/src
+    AZURE_STORAGE_ENABLED: "${AZURE_STORAGE_ENABLED:-false}"
+    AZURE_STORAGE_ACCOUNT_URL: "${AZURE_STORAGE_ACCOUNT_URL}"
+    AZURE_STORAGE_CONTAINER: "${AZURE_STORAGE_CONTAINER}"
+    AZURE_STORAGE_AUTH_MODE: "${AZURE_STORAGE_AUTH_MODE:-sas}"
+    AZURE_STORAGE_SAS_TOKEN: "${AZURE_STORAGE_SAS_TOKEN}"
     # yamllint disable rule:line-length
     # Use simple http server on scheduler for health checks
     # See https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html#scheduler-health-check-server
