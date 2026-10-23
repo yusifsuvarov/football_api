@@ -3,7 +3,7 @@ import os
 from datetime import date, datetime
 from pathlib import Path
 
-from azure.identity import ManagedIdentityCredential
+from azure.identity import DefaultAzureCredential, ManagedIdentityCredential
 from azure.storage.blob import BlobServiceClient, ContentSettings
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -19,10 +19,12 @@ def _upload_raw_payload_to_azure(payload: dict, local_path: Path) -> None:
 
     if auth_mode == "managed_identity":
         credential = ManagedIdentityCredential()
+    elif auth_mode == "default_azure_credential":
+        credential = DefaultAzureCredential()
     elif auth_mode == "sas":
         credential = os.environ["AZURE_STORAGE_SAS_TOKEN"].lstrip("?")
     else:
-        raise ValueError("AZURE_STORAGE_AUTH_MODE must be 'sas' or 'managed_identity'")
+        raise ValueError("AZURE_STORAGE_AUTH_MODE must be " "'managed_identity', 'default_azure_credential', or 'sas'")
 
     raw_folder = PROJECT_ROOT / "data" / "raw"
     blob_name = local_path.relative_to(raw_folder).as_posix()

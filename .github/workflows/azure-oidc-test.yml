@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
       - name: Log in to Azure with OIDC
         uses: azure/login@v2
         with:
@@ -19,16 +22,26 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Create test file
-        run: |
-          echo '{"test":"GitHub Actions OIDC upload","status":"success"}' > oidc-check.json
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-      - name: Upload test file to Blob Storage
+      - name: Install Azure SDK
+        run: pip install azure-identity azure-storage-blob
+
+      - name: Upload test JSON with Python SDK
+        env:
+          PYTHONPATH: src
+          AZURE_STORAGE_ENABLED: "true"
+          AZURE_STORAGE_ACCOUNT_URL: https://stfootballapidev.blob.core.windows.net
+          AZURE_STORAGE_CONTAINER: raw-football-data
+          AZURE_STORAGE_AUTH_MODE: default_azure_credential
         run: |
-          az storage blob upload \
-            --account-name stfootballapidev \
-            --container-name raw-football-data \
-            --name github-actions/oidc-check.json \
-            --file oidc-check.json \
-            --auth-mode login \
-            --overwrite true
+          python - <<'PY'
+          from datetime import date, datetime, timezone
+          from football_pipeline.storage.raw_json import save_raw_payload
+
+          payload = {"test": "Python SDK with GitHub OIDC", "status": "success"}
+          save_raw_payload(payload, date.today(), datetime.now(timezone.utc))
+          PY
