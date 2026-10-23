@@ -30,18 +30,29 @@ jobs:
       - name: Install Azure SDK
         run: pip install azure-identity azure-storage-blob
 
-      - name: Upload test JSON with Python SDK
+      - name: Fetch Football API data and upload raw JSON to Azure
         env:
           PYTHONPATH: src
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           AZURE_STORAGE_ENABLED: "true"
           AZURE_STORAGE_ACCOUNT_URL: https://stfootballapidev.blob.core.windows.net
           AZURE_STORAGE_CONTAINER: raw-football-data
           AZURE_STORAGE_AUTH_MODE: default_azure_credential
         run: |
           python - <<'PY'
-          from datetime import date, datetime, timezone
-          from football_pipeline.storage.raw_json import save_raw_payload
+          from datetime import datetime, timedelta
+          from zoneinfo import ZoneInfo
+          from football_pipeline.jobs.fixtures_ingestion import fetch_and_save_raw
 
-          payload = {"test": "Python SDK with GitHub OIDC", "status": "success"}
-          save_raw_payload(payload, date.today(), datetime.now(timezone.utc))
+          today_baku = datetime.now(ZoneInfo("Asia/Baku")).date()
+          fixture_dates = [
+              today_baku - timedelta(days=1),
+              today_baku,
+              today_baku + timedelta(days=1),
+          ]
+
+          saved = fetch_and_save_raw(fixture_dates)
+          print(f"Saved {len(saved)} raw API payloads:")
+          for item in saved:
+              print(f"{item['fixture_date']} -> {item['path']}")
           PY
