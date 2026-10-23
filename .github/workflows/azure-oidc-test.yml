@@ -28,7 +28,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install Azure SDK
-        run: pip install azure-identity azure-storage-blob
+        run: pip install azure-identity azure-storage-blob requests "psycopg[binary]"
 
       - name: Fetch Football API data and upload raw JSON to Azure
         env:
