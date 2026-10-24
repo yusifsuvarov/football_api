@@ -190,3 +190,51 @@ After a successful run, verify that:
 - Store Databricks credentials in Airflow connections or an appropriate secrets backend.
 - Grant Databricks connection and catalog access only to users and service identities that need it.
 - For production use, prefer managed identity or service-principal authentication and a managed secrets solution over a personal access token.
+
+## Azure Blob Storage
+
+Raw API-Football responses are saved locally and uploaded to Azure Blob Storage
+before they are loaded into PostgreSQL and processed by Databricks.
+
+### Data flow
+
+1. Airflow fetches fixtures for yesterday, today, and tomorrow.
+2. Each API response is saved as a timestamped JSON file.
+3. The raw JSON files are uploaded to the `raw-football-data` container.
+4. The saved payloads are loaded into PostgreSQL.
+5. Airflow starts the Databricks job, which processes the data through Bronze,
+   Silver, and Gold layers.
+
+Blob paths follow this pattern:
+
+```text
+api_football/fixtures/ingestion_date=YYYY-MM-DD/fixtures_<fixture-date>_<timestamp>.json
+
+Authentication
+- GitHub Actions: Azure login uses GitHub OIDC and a federated credential
+  for the football-api-github-uami managed identity. The identity has the
+  Storage Blob Data Contributor role on the storage account.
+- Local Docker development: Airflow receives a short-lived, container-scoped
+  SAS token through environment variables in .env. The token is not committed
+  to the repository.
+- SAS tokens and other credentials must never be added to source code,
+  workflow files, or screenshots.
+Configuration
+Set these variables in the local .env file for Docker-based runs:
+AZURE_STORAGE_ENABLED=true
+AZURE_STORAGE_ACCOUNT_URL=https://<storage-account>.blob.core.windows.net
+AZURE_STORAGE_CONTAINER=raw-football-data
+AZURE_STORAGE_AUTH_MODE=sas
+AZURE_STORAGE_SAS_TOKEN=<container-scoped-SAS-token>
+
+For GitHub Actions, use OIDC authentication and GitHub repository secrets for
+the Azure client, tenant, and subscription IDs. Do not use the local SAS token
+in GitHub Actions.
+Verification
+The integration was verified on 2026-10-23:
+- GitHub Actions authenticated to Azure with OIDC and uploaded a test JSON blob.
+- The local Airflow DAG completed successfully:
+  fetch_and_save_raw → load_raw_to_postgres → run_databricks_lakehouse.
+- New fixture JSON files appeared in Azure Blob Storage.
+- The Databricks Gold query returned results through
+  football_api.gold.daily_league_summary.
